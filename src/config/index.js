@@ -5,6 +5,7 @@ export default {
   server: {
     port: process.env.SERVER_PORT,
   },
+  acceptedHosts: process.env.ACCEPTED_HOSTS.split(','),
   redis: {
     url: process.env.REDIS_URL
   },

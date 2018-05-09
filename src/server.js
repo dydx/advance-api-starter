@@ -9,10 +9,12 @@ import jwt from 'express-jwt'
 import unless from 'express-unless'
 import responseTime from 'response-time'
 import morgan from 'morgan'
+import hostValidation from 'host-validation'
 
 import config from './config'
 import logger from './utils/logger'
 import { middleware } from './utils/jwt'
+import { middleware as clientMiddleware } from './utils/oauth'
 import NotFoundError from './utils/errors/notFound'
 
 // Setup app
@@ -34,6 +36,22 @@ api.use(session({
 const jwtConfig = jwt({ secret: config.jwt.secret })
 jwtConfig.unless = unless
 
+// Validate permissions for app
+const requiresAdmin = [
+	'/api/v1/auth/signup',
+	'/api/v1/auth/login',
+	'/oauth/authorize',
+	'/oauth/authorize/decision',
+	'/api/v1/clients',
+	'/api/v1/users/confirm'
+]
+
+requiresAdmin.map(route => {
+	api.use(route, hostValidation({ hosts: config.acceptedHosts }))
+})
+
+api.use('/api/*', clientMiddleware)
+
 // Setup non-authenticated routes
 const nonAuthedRoutes = [
 	'/api/v1/auth/signup',
@@ -44,16 +62,6 @@ const nonAuthedRoutes = [
 
 api.use(jwtConfig.unless({ path: nonAuthedRoutes }))
 api.use(middleware().unless({ path: nonAuthedRoutes }))
-
-// Validate permissions for app
-const requiresAdmin = [
-	'/api/v1/auth/signup',
-	'/api/v1/auth/login',
-	'/oauth/authorize',
-	'/oauth/authorize/decision',
-	'/api/v1/clients',
-	'/api/v1/users/confirm'
-]
 
 // Automatically require routes files
 fs.readdirSync(path.join(__dirname, 'routes')).map(file => {
