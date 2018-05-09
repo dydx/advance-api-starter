@@ -1,0 +1,24 @@
+{
+	"name": "api",
+	"version": "1.0.0",
+	"description": "A scalable API which I can use on projects.",
+	"scripts": {
+		"start": "cd dist && node server.js",
+		"watch": "nodemon start",
+		"build": "./build.sh"
+	},
+	"author": "Joseph Smith",
+	"keywords": [
+		"API"
+	],
+	"dependencies": {
+		"babel-core": "^6.26.3",
+		"babel-loader": "^7.1.4",
+		"babel-polyfill": "^6.26.0",
+		"babel-preset-env": "^1.6.1"
+	},
+	"devDependencies": {
+    "babel-cli": "^6.26.0",
+		"nodemon": "^1.17.4"
+	}
+}
