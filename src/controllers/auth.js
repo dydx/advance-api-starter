@@ -32,8 +32,9 @@ const login = (req, res, next) => {
         if (isMatch && !err) {
           logger.info('User authenticated, generating token');
           jwtUtils.create(user, (err, data) => {
+            if (err) return next(new Error(err))
             req.user = data
-            res.status(200).json({
+            return res.status(200).json({
               message: 'Successfully logged in',
               data
             })
