@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import timestamps from 'mongoose-timestamp'
 import logger from '../utils/logger'
 import email from '../utils/email'
+import { uid } from '../utils/helpers'
 
 export const UserSchema = new Schema({
   email: {
@@ -31,6 +32,10 @@ export const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+  confirmationToken: {
+    type: String,
+    required: false
+  },
   admin: {
     type: Boolean,
     default: false
@@ -43,14 +48,23 @@ export const UserSchema = new Schema({
 
 UserSchema.pre('save', function (next) {
   if (this.isNew) {
-    email({
-      type: 'welcome',
-      email: this.email
-    }).then(() => {
-      next()
-    }).catch(err => {
-      logger.error(err)
-      next()
+    this.confirmationToken = uid(16)
+    this.save((err) => {
+      if (err) {
+        logger.error(err)
+        next(new Error('Unable to save confirmation token.'))
+      } else {
+        email({
+          type: 'welcome',
+          email: this.email,
+          confirmationToken: this.confirmationToken
+        }).then(() => {
+          next()
+        }).catch(err => {
+          logger.error(err)
+          next()
+        })
+      }
     })
   }
   next()

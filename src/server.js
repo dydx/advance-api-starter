@@ -38,7 +38,8 @@ jwtConfig.unless = unless
 const nonAuthedRoutes = [
 	'/api/v1/auth/signup',
 	'/api/v1/auth/login',
-	'/oauth/authorize'
+	'/oauth/authorize',
+	'/api/v1/users/confirm'
 ]
 
 api.use(jwtConfig.unless({ path: nonAuthedRoutes }))
@@ -47,7 +48,11 @@ api.use(middleware().unless({ path: nonAuthedRoutes }))
 // Validate permissions for app
 const requiresAdmin = [
 	'/api/v1/auth/signup',
-	'/api/v1/auth/login'
+	'/api/v1/auth/login',
+	'/oauth/authorize',
+	'/oauth/authorize/decision',
+	'/api/v1/clients',
+	'/api/v1/users/confirm'
 ]
 
 // Automatically require routes files

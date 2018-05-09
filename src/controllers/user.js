@@ -85,3 +85,30 @@ exports.delete = (req, res) => {
       res.status(422).send(err.errors)
     })
 }
+
+exports.confirm = (req, res) => {
+  const confirmationToken = req.body.confirmationToken
+  User.findOne({ confirmationToken }, (err, user) => {
+    if (err) {
+      logger.error(err)
+      res.status(422).send(err)
+    }
+
+    if (user) {
+      user.update({$unset: {confirmationToken: 1 }, confirmed: true}, (err) => {
+        if (err) {
+          logger.error(err)
+          res.status(422).send(err)
+        }
+
+        return res.status(200).json({
+          message: 'Account successfully confirmed.'
+        })
+      })
+    } else {
+      return res.status(200).json({
+        message: 'Unauthorized, incorrect confirmation token'
+      })
+    }
+  })
+}
