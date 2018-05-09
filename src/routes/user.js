@@ -6,4 +6,4 @@ module.exports = api => {
 	api.route('/api/v1/users/:userId').put(User.put);
 	api.route('/api/v1/users/').post(User.post);
 	api.route('/api/v1/users/:userId').delete(User.delete);
-};
+}
